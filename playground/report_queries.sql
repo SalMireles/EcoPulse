@@ -1,0 +1,332 @@
+-- Top 25 Popular Manufacturers
+-- SELECT Manufacturer.name,
+--     COUNT(Appliance) AS Appliances
+-- FROM Manufacturer
+--     INNER JOIN Appliance ON Manufacturer.name = Appliance.manufacturer_name
+-- GROUP BY Manufacturer.name
+-- ORDER BY Appliances DESC
+-- LIMIT 25;
+-- Top 25 Popular Manufacturers
+-- SELECT Appliance.type,
+--     COUNT(Appliance) AS Appliances
+-- FROM Appliance
+--     INNER JOIN Manufacturer ON Appliance.manufacturer_name = Manufacturer.name
+-- WHERE Appliance.manufacturer_name = 'Man1'
+-- GROUP BY Appliance.type;
+-- Manufacturer/Model Search
+-- SELECT Manufacturer.name,
+--     Appliance.model_name
+-- FROM Manufacturer
+--     LEFT JOIN Appliance on Manufacturer.name = Appliance.manufacturer_name
+-- WHERE LOWER(Appliance.model_name) LIKE '%an%'
+--     OR LOWER(Appliance.manufacturer_name) LIKE '%an%'
+--     OR LOWER(Manufacturer.name) LIKE '%an%'
+-- ORDER BY Manufacturer.name ASC,
+--     Appliance.model_name ASC;
+-- Heating/Cooling Method Details - Query 1
+-- SELECT Household.household_type,
+--     COUNT(Appliance) AS appliances,
+--     ROUND(AVG(Appliance.btu_rating)) AS average_btu,
+--     ROUND(AVG(AirConditioner.eer), 1) AS average_eer
+-- FROM Appliance
+--     INNER JOIN AirConditioner ON Appliance.email = AirConditioner.email
+--     and Appliance.appliance_number = AirConditioner.appliance_number
+--     INNER JOIN Household ON Appliance.email = Household.email
+-- GROUP BY Household.household_type
+-- Heating/Cooling Method Details - Query 2
+-- SELECT Household.household_type,
+--     COUNT(Heater) AS heaters,
+--     ROUND(AVG(Appliance.btu_rating)) AS average_btu,
+--     MAX(Heater.energy_source) AS top_energy_source
+-- FROM Appliance
+--     INNER JOIN Heater ON Appliance.email = Heater.email
+--     and Appliance.appliance_number = Heater.appliance_number
+--     INNER JOIN Household ON Appliance.email = Household.email
+-- GROUP BY Household.household_type,
+--     Heater.energy_source 
+-- Heating / Cooling Method Details - Query 3
+-- SELECT Household.household_type,
+--     COUNT(HeatPump) AS heatpumps,
+--     ROUND(AVG(Appliance.btu_rating)) AS average_btu,
+--     ROUND(AVG(HeatPump.hspf), 1) AS average_hspf,
+--     ROUND(AVG(HeatPump.seer), 1) AS average_seer
+-- FROM Appliance
+--     INNER JOIN HeatPump ON Appliance.email = HeatPump.email
+--     and Appliance.appliance_number = HeatPump.appliance_number
+--     INNER JOIN Household ON Appliance.email = Household.email
+-- GROUP BY Household.household_type
+-- Heating / Cooling Method Details - Combined
+-- SELECT Household.household_type,
+--     COUNT(Appliance.appliance_number) AS appliances,
+--     ROUND(AVG(Appliance.btu_rating)) AS average_btu,
+--     ROUND(AVG(AirConditioner.eer), 1) AS average_eer,
+--     MAX(Heater.energy_source) AS top_energy_source,
+--     ROUND(AVG(HeatPump.hspf), 1) AS average_hspf,
+--     ROUND(AVG(HeatPump.seer), 1) AS average_seer
+-- FROM Household
+--     LEFT JOIN Appliance ON Appliance.email = Household.email
+--     LEFT JOIN AirConditioner ON AirConditioner.email = Appliance.email
+--     AND AirConditioner.appliance_number = Appliance.appliance_number
+--     LEFT JOIN Heater ON Heater.email = Appliance.email
+--     AND Heater.appliance_number = Appliance.appliance_number
+--     LEFT JOIN HeatPump ON HeatPump.email = Appliance.email
+--     AND HeatPump.appliance_number = Appliance.appliance_number
+-- GROUP BY Household.household_type
+-- Water Statistic By State
+-- SELECT Location.state,
+--     ROUND(AVG(WaterHeater.capacity)) AS avg_water_heater_capacity,
+--     ROUND(AVG(Appliance.btu_rating)) AS avg_water_heater_btu,
+--     ROUND(AVG(WaterHeater.current_temperature), 1) AS avg_water_heater_temp,
+--     COUNT(
+--         CASE
+--             WHEN WaterHeater.current_temperature IS NOT NULL THEN 1
+--         END
+--     ) AS temps_set,
+--     COUNT(
+--         CASE
+--             WHEN WaterHeater.current_temperature IS NULL THEN 1
+--         END
+--     ) AS temps_not_set
+-- FROM Location
+--     LEFT JOIN Household ON Household.postal_code = Location.postal_code
+--     LEFT JOIN Appliance ON Appliance.email = Household.email
+--     LEFT JOIN WaterHeater ON WaterHeater.email = Appliance.email
+--     and WaterHeater.appliance_number = Appliance.appliance_number
+-- GROUP BY Location.state
+-- ORDER BY Location.state ASC 
+-- Water Statistic By State, Drilldown
+-- SELECT WaterHeater.energy_source,
+--     ROUND(MIN(WaterHeater.capacity)) AS min_water_heater_capacity,
+--     ROUND(AVG(WaterHeater.capacity)) AS avg_water_heater_capacity,
+--     ROUND(MAX(WaterHeater.capacity)) AS max_water_heater_capacity,
+--     ROUND(MIN(WaterHeater.current_temperature), 1) AS min_water_heater_capacity,
+--     ROUND(AVG(WaterHeater.current_temperature), 1) AS avg_water_heater_capacity,
+--     ROUND(MAX(WaterHeater.current_temperature), 1) AS max_water_heater_capacity
+-- FROM WaterHeater
+--     INNER JOIN Appliance ON Appliance.email = WaterHeater.email
+--     AND Appliance.appliance_number = WaterHeater.appliance_number
+--     INNER JOIN Household ON Household.email = Appliance.email
+--     INNER JOIN Location ON Location.postal_code = Household.postal_code
+-- WHERE Location.state = 'AR'
+-- GROUP BY WaterHeater.energy_source
+-- ORDER BY WaterHeater.energy_source ASC
+-- Off-the-grid Household Dashboard, Query # 1
+-- SELECT Location.state,
+--     COUNT(Household) AS count_off_grid_households
+-- FROM Household
+--     INNER JOIN Location ON Location.postal_code = Household.postal_code
+-- WHERE NOT Household.on_grid
+-- GROUP BY Location.state
+-- ORDER BY count_off_grid_households DESC
+-- LIMIT 1;
+-- Off-the-grid Household Dashboard, Query # 2
+-- SELECT ROUND(AVG(PowerGenerator.capacity)) AS avg_power_gen_capacity,
+--     ROUND(
+--         (COUNT(PowerGenerator.type) * 100.0) / (
+--             SELECT COUNT(PowerGenerator)
+--             FROM PowerGenerator
+--         ),
+--         1
+--     ) AS percent_each_power_gen_type
+-- FROM Household
+--     INNER JOIN Location ON Location.postal_code = Household.postal_code
+--     INNER JOIN PowerGenerator ON PowerGenerator.email = Household.email
+-- WHERE NOT Household.on_grid
+-- GROUP BY PowerGenerator.type;
+-- Off-the-grid Household Dashboard, Query # 3
+-- SELECT ROUND(AVG(WaterHeater.capacity), 1) AS avg_water_heater_capacity_off_grid,
+--     NULL as avg_water_heater_capacity_on_grid
+-- FROM Household
+--     INNER JOIN Appliance ON Appliance.email = Household.email
+--     INNER JOIN WaterHeater ON WaterHeater.email = Appliance.email
+--     AND WaterHeater.appliance_number = Appliance.appliance_number
+-- WHERE NOT Household.on_grid
+-- UNION
+-- SELECT NULL as avg_water_heater_capacity_off_grid,
+--     ROUND(AVG(WaterHeater.capacity), 1) AS avg_water_heater_capacity_on_grid
+-- FROM Household
+--     INNER JOIN Appliance ON Appliance.email = Household.email
+--     INNER JOIN WaterHeater ON WaterHeater.email = Appliance.email
+--     AND WaterHeater.appliance_number = Appliance.appliance_number
+-- WHERE Household.on_grid;
+-- Off-the-grid Household Dashboard, Query # 4
+-- SELECT Appliance.type,
+--     ROUND(MIN(Appliance.btu_rating), 1) AS min_btu_rating,
+--     ROUND(AVG(Appliance.btu_rating), 1) AS avg_btu_rating,
+--     ROUND(MAX(Appliance.btu_rating), 1) AS max_btu_rating
+-- FROM Appliance
+--     INNER JOIN Household ON Household.email = Appliance.email
+-- WHERE NOT Household.on_grid
+-- GROUP BY Appliance.type;
+-- Household Averages by Radius, Validation
+-- SELECT Location.postal_code
+-- FROM Location
+-- WHERE Location.postal_code = '71937';
+-- Household Averages by Radius, Query # 1
+-- SELECT Location.postal_code,
+--     Location.latitude AS Lat,
+--     Location.longitude AS Lon,
+--     DEGREES(
+--         ACOS(
+--             SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                 RADIANS(Location.longitude) - RADIANS(center_longitude)
+--             )
+--         )
+--     ) * 60 * 1.1515 * 0.621371 AS miles_from_selected_postal
+-- FROM Location
+--     CROSS JOIN (
+--         SELECT latitude AS center_latitude,
+--             longitude AS center_longitude
+--         FROM Location
+--         WHERE postal_code = '71937'
+--     ) AS center_location
+-- WHERE DEGREES(
+--         ACOS(
+--             SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                 RADIANS(Location.longitude) - RADIANS(center_longitude)
+--             )
+--         )
+--     ) * 60 * 1.1515 * 0.621371 < 100;
+-- Household Averages by Radius, Query # 2
+-- SELECT COUNT(all_households) AS count_all_nearby_households,
+--     Household.household_type AS household_type,
+--     ROUND(AVG(Household.square_footage)) AS avg_house_sq_foot,
+--     ROUND(AVG(Household.thermostat_setting_heating), 1) AS avg_house_therm_heating,
+--     ROUND(AVG(Household.thermostat_setting_cooling), 1) AS avg_house_therm_cooling
+-- FROM (
+--         SELECT *
+--         FROM Household
+--     ) AS all_households
+--     JOIN (
+--         SELECT Location.postal_code,
+--             Location.latitude AS Lat,
+--             Location.longitude AS Lon,
+--             DEGREES(
+--                 ACOS(
+--                     SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                         RADIANS(Location.longitude) - RADIANS(center_longitude)
+--                     )
+--                 )
+--             ) * 60 * 1.1515 * 0.621371 AS miles_from_selected_postal
+--         FROM Location
+--             CROSS JOIN (
+--                 SELECT latitude AS center_latitude,
+--                     longitude AS center_longitude
+--                 FROM Location
+--                 WHERE postal_code = '71937'
+--             ) AS center_location
+--         WHERE DEGREES(
+--                 ACOS(
+--                     SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                         RADIANS(Location.longitude) - RADIANS(center_longitude)
+--                     )
+--                 )
+--             ) * 60 * 1.1515 * 0.621371 < 6000
+--     ) AS nearby_locations ON all_households.postal_code = nearby_locations.postal_code
+--     JOIN Household ON all_households.email = Household.email
+-- GROUP BY Household.household_type;
+-- Household Averages by Radius, Query # 3
+-- SELECT HouseholdUtilities.utilities
+-- FROM (
+--         SELECT *
+--         FROM Household
+--     ) AS all_households
+--     JOIN (
+--         SELECT Location.postal_code,
+--             Location.latitude AS Lat,
+--             Location.longitude AS Lon,
+--             DEGREES(
+--                 ACOS(
+--                     SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                         RADIANS(Location.longitude) - RADIANS(center_longitude)
+--                     )
+--                 )
+--             ) * 60 * 1.1515 * 0.621371 AS miles_from_selected_postal
+--         FROM Location
+--             CROSS JOIN (
+--                 SELECT latitude AS center_latitude,
+--                     longitude AS center_longitude
+--                 FROM Location
+--                 WHERE postal_code = '71937'
+--             ) AS center_location
+--         WHERE DEGREES(
+--                 ACOS(
+--                     SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                         RADIANS(Location.longitude) - RADIANS(center_longitude)
+--                     )
+--                 )
+--             ) * 60 * 1.1515 * 0.621371 < 6000
+--     ) AS nearby_locations ON all_households.postal_code = nearby_locations.postal_code
+--     JOIN HouseholdUtilities on all_households.email = HouseholdUtilities.email
+-- WHERE all_households.on_grid;
+-- Household Averages by Radius, Query # 4
+-- SELECT COUNT(all_households) AS count_all_offgrid_nearby_households
+-- FROM (
+--         SELECT *
+--         FROM Household
+--     ) AS all_households
+--     JOIN (
+--         SELECT Location.postal_code,
+--             Location.latitude AS Lat,
+--             Location.longitude AS Lon,
+--             DEGREES(
+--                 ACOS(
+--                     SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                         RADIANS(Location.longitude) - RADIANS(center_longitude)
+--                     )
+--                 )
+--             ) * 60 * 1.1515 * 0.621371 AS miles_from_selected_postal
+--         FROM Location
+--             CROSS JOIN (
+--                 SELECT latitude AS center_latitude,
+--                     longitude AS center_longitude
+--                 FROM Location
+--                 WHERE postal_code = '71937'
+--             ) AS center_location
+--         WHERE DEGREES(
+--                 ACOS(
+--                     SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                         RADIANS(Location.longitude) - RADIANS(center_longitude)
+--                     )
+--                 )
+--             ) * 60 * 1.1515 * 0.621371 < 6000
+--     ) AS nearby_locations ON all_households.postal_code = nearby_locations.postal_code
+--     JOIN Household ON all_households.email = Household.email
+-- WHERE NOT Household.on_grid;
+-- Household Averages by Radius, Query # 5
+-- SELECT COUNT(PowerGenerator) AS count_household_with_power_gen,
+--     PowerGenerator.type,
+--     ROUND(AVG(PowerGenerator.avg_mon_kilo_hours)) AS avg_mon_kilo_hours,
+--     COUNT(PowerGenerator.capacity) AS count_household_with_battery_storage
+-- FROM (
+--         SELECT *
+--         FROM Household
+--     ) AS all_households
+--     JOIN (
+--         SELECT Location.postal_code,
+--             Location.latitude AS Lat,
+--             Location.longitude AS Lon,
+--             DEGREES(
+--                 ACOS(
+--                     SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                         RADIANS(Location.longitude) - RADIANS(center_longitude)
+--                     )
+--                 )
+--             ) * 60 * 1.1515 * 0.621371 AS miles_from_selected_postal
+--         FROM Location
+--             CROSS JOIN (
+--                 SELECT latitude AS center_latitude,
+--                     longitude AS center_longitude
+--                 FROM Location
+--                 WHERE postal_code = '71937'
+--             ) AS center_location
+--         WHERE DEGREES(
+--                 ACOS(
+--                     SIN(Location.latitude) * SIN(RADIANS(center_latitude)) + COS(Location.latitude) * COS(RADIANS(center_latitude)) * COS(
+--                         RADIANS(Location.longitude) - RADIANS(center_longitude)
+--                     )
+--                 )
+--             ) * 60 * 1.1515 * 0.621371 < 6000
+--     ) AS nearby_locations ON all_households.postal_code = nearby_locations.postal_code
+--     JOIN PowerGenerator on all_households.email = PowerGenerator.email
+-- GROUP BY PowerGenerator.type;

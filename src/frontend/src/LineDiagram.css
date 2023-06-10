@@ -1,0 +1,35 @@
+.circle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #a9a8a8;
+  border: 2px solid #a9a8a8;
+}
+
+.circle.filled {
+  background-color: #007bff;
+}
+
+.step-text {
+  position: absolute;
+  font-size: 14px;
+  top: -25px;
+  width: 80px;
+  text-align: center;
+  color:#007bff;
+}
+
+.line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: #a9a8a8; /* change line color to blue */
+  transform: translateY(-1px); /* center line through the center of the circles */
+  z-index: -1; /* move the line behind the circles */
+}

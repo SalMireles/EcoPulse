@@ -1,0 +1,50 @@
+.line-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.line {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #363bda;
+}
+
+.circle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  border-radius: 10%;
+  background-color: #fff;
+  border: 2px solid #007bff;
+  margin: 0 140px;
+}
+
+.circle.filled {
+  background-color: #007bff;
+}
+
+.step-text {
+  position: absolute;
+  font-size: 18px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.circles {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  position: relative;
+}

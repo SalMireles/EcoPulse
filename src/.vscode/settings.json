@@ -1,0 +1,24 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "dev",
+      "database": "postgres",
+      "username": "postgres",
+      "password": "Foster1832!"
+    },
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "cs6400_practice_3",
+      "password": "Foster1832!",
+      "database": "cs6400_practice_3",
+      "username": "postgres"
+    }
+  ]
+}
